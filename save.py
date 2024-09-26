@@ -9,3 +9,9 @@ def save_answers(answers):
     with open('Answers.txt', 'w') as f:
         for answer in answers:
             f.write(answer + '\n')  # 每个答案占一行
+
+# 输出检查结果到文件
+def save_grade(correct, wrong):
+    with open('Grade.txt', 'w') as f:
+        f.write(f"Correct: {len(correct)} ({', '.join(map(str, correct))})\n")
+        f.write(f"Wrong: {len(wrong)} ({', '.join(map(str, wrong))})\n")

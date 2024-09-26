@@ -22,4 +22,4 @@ def generate_exercises(num_questions, range_limit):
         expr = f"{nums[0]} {random_ops[0]} {nums[1]} {random_ops[1]} {nums[2]}"
         exercises.add(expr)
 
-    return list(exercises)  # 返回生成的题目列表
+    return list(exercises)  # 返回生成的题目

@@ -1,5 +1,11 @@
 # 保存题目到文件
-def save_exercises(formatted_exercises):
+def save_exercises(exercises):
+    with open('Exercises.txt', 'w') as f:
+        for exercise in exercises:
+            f.write(f"{exercise}\n")  # 每道题目占一行
+
+# 保存带分数形式的题目到文件
+def save_formatted_exercises(formatted_exercises):
     with open('FormattedExercises.txt', 'w') as f:
         for exercise in formatted_exercises:
             f.write(f"{exercise}\n")  # 每道题目占一行

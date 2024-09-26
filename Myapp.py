@@ -4,7 +4,7 @@ import check as check  # 导入检查模块
 import generate_exercises as gen  # 导入生成题目的模块
 import calculate_answers as cal  # 导入计算答案的模块
 
-def Myapp():
+def myapp():
     # 创建参数解析器
     parser = argparse.ArgumentParser(description='四则运算题目生成器')
     # 添加命令行参数
@@ -27,11 +27,12 @@ def Myapp():
 
     # 生成题目和格式化题目
     exercises, formatted_exercises = gen.generate_exercises(args.n, args.r)
-    answers = cal.calculate_answers(exercises)  # 计算答案
-    sa.save_exercises(formatted_exercises)  # 保存题目
-    sa.save_answers(answers)  # 保存答案
+    answers = cal.calculate_answers(exercises)
+    sa.save_exercises(exercises)
+    sa.save_formatted_exercises(formatted_exercises)
+    sa.save_answers(answers)
 
 # 运行主函数
-if __name__ == "__Myapp__":
-    Myapp()
+if __name__ == "__main__":
+    myapp()
 

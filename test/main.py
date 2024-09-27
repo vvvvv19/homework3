@@ -2,8 +2,9 @@ from fractions import Fraction
 import random
 from line_profiler_pycharm import profile
 
-# 格式化分数为带分数形式
+
 @profile
+# 格式化分数为带分数形式
 def format_mixed_number(fraction):
     if fraction.denominator == 1:
         return str(fraction.numerator)  # 如果是整数，直接返回整数
@@ -21,7 +22,7 @@ def format_mixed_number(fraction):
 def generate_exercises(num_questions, range_limit):
     operators = ['+', '-', '*', '/']
     exercises = set()
-    formatted_exercises = set()  # 用于保存带分数形式的题目
+    exercise_pairs = []  # 用于保存题目及其带分数形式的元组
 
     while len(exercises) < num_questions:
         num_operands = random.randint(2, 4)
@@ -33,12 +34,15 @@ def generate_exercises(num_questions, range_limit):
                 nums.append(str(num))
                 formatted_nums.append(str(num))
             else:
+                #分子
                 numerator = random.randint(1, range_limit - 1)
+                #分母
                 denominator = random.randint(2, range_limit)
                 fraction = Fraction(numerator, denominator)
+                #变成代分数
                 formatted_fraction = format_mixed_number(fraction)
-                nums.append(f"({fraction})")
-                formatted_nums.append(f"({formatted_fraction})")
+                nums.append(f"{fraction}")
+                formatted_nums.append(f"{formatted_fraction}")
 
         random_ops = random.choices(operators, k=num_operands - 1)
 
@@ -69,16 +73,22 @@ def generate_exercises(num_questions, range_limit):
             continue
 
         exercises.add(expr)
-        formatted_exercises.add(formatted_expr)
+        exercise_pairs.append((expr, formatted_expr))  # 保存元组
+
+    # 分离出题目和带分数形式
+    exercises, formatted_exercises = zip(*exercise_pairs) if exercise_pairs else ([], [])
 
     return list(exercises), list(formatted_exercises)
+
 
 @profile
 # 计算题目的答案
 def calculate_answers(exercises):
     answers = []
     for expr in exercises:
+        #使用eval计算字符串得到答案
         result = eval(expr)
+        #将答案转化成代分数
         answers.append(format_mixed_number(Fraction(result).limit_denominator()))
     return answers
 
@@ -107,32 +117,37 @@ def save_answers(answers):
 # 检查答案的正确性
 def check_answers(exercise_file, answer_file):
     with open(exercise_file, 'r') as ef, open(answer_file, 'r') as af:
+        #读取题目和答案
         exercises = ef.readlines()
         answers = af.readlines()
 
-    correct = []
-    wrong = []
+    correct = []    # 存储正确答案的题目索引
+    wrong = []      # 存储错误答案的题目索引
 
+    # 遍历每个题目和对应的答案并组成元组生成索引
     for i, (exercise, answer) in enumerate(zip(exercises, answers)):
+        # 计算题目的期望答案，并格式化为带分数形式
         expected_answer = format_mixed_number(Fraction(eval(exercise.strip())).limit_denominator())
+        # 检查期望答案与用户答案是否匹配
         if expected_answer.strip() == answer.strip():
-            correct.append(i + 1)
+            correct.append(i + 1)#正确的加入正确列表
         else:
-            wrong.append(i + 1)
+            wrong.append(i + 1)#错误的加入错误列表
 
     return correct, wrong
 
 
 @profile
+#判定文件写入生成
 def save_grade(correct, wrong):
     with open('Grade_for_test.txt', 'w') as f:
         f.write(f"Correct: {len(correct)} ({', '.join(map(str, correct))})\n")
         f.write(f"Wrong: {len(wrong)} ({', '.join(map(str, wrong))})\n")
 
 @profile
-def test():
+def main():
     # 固定生成题目的个数和数值范围
-    num_questions = 10  # 生成10道题目
+    num_questions = 5  # 生成10道题目
     range_limit = 10  # 数值范围为1到10
 
     # 生成题目
@@ -155,13 +170,17 @@ def test():
     for exercise in exercises:
         print(exercise)
 
+    print("\n给人看的题目:")
+    for formatted_exercise in formatted_exercises:
+        print(formatted_exercise)
+
     print("\n生成的答案:")
     for answer in answers:
         print(answer)
 
 
 if __name__ == "__main__":
-    test()
+    main()
 
 
 

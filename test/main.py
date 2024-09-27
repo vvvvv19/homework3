@@ -20,65 +20,69 @@ def format_mixed_number(fraction):
 @profile
 # 生成四则运算题目
 def generate_exercises(num_questions, range_limit):
-    operators = ['+', '-', '*', '/']
-    exercises = set()
+    operators = ['+', '-', '*', '/']  # 可用的运算符
+    exercises = set()  # 用于存储唯一题目的集合
     exercise_pairs = []  # 用于保存题目及其带分数形式的元组
 
+    # 循环直到生成指定数量的题目
     while len(exercises) < num_questions:
-        num_operands = random.randint(2, 4)
-        nums = []
-        formatted_nums = []
+        num_operands = random.randint(2, 4)  # 随机选择操作数的数量（2到4个）
+        nums = []  # 存储生成的操作数
+        formatted_nums = []  # 存储格式化后的操作数（带分数形式）
+
+        # 生成操作数
         for _ in range(num_operands):
             if random.choice([True, False]):
+                # 随机生成一个整数
                 num = random.randint(1, range_limit)
-                nums.append(str(num))
-                formatted_nums.append(str(num))
+                nums.append(str(num))  # 将整数转换为字符串
+                formatted_nums.append(str(num))  # 原样保存整数
             else:
-                #分子
-                numerator = random.randint(1, range_limit - 1)
-                #分母
-                denominator = random.randint(2, range_limit)
-                fraction = Fraction(numerator, denominator)
-                #变成代分数
-                formatted_fraction = format_mixed_number(fraction)
-                nums.append(f"{fraction}")
-                formatted_nums.append(f"{formatted_fraction}")
+                # 随机生成分数的分子和分母
+                numerator = random.randint(1, range_limit - 1)  # 分子
+                denominator = random.randint(2, range_limit)  # 分母（分母不为0）
+                fraction = Fraction(numerator, denominator)  # 创建分数对象
+                formatted_fraction = format_mixed_number(fraction)  # 格式化为带分数
+                nums.append(f"{fraction}")  # 将分数转换为字符串
+                formatted_nums.append(f"{formatted_fraction}")  # 保存带分数形式
 
+        # 随机选择运算符
         random_ops = random.choices(operators, k=num_operands - 1)
 
         # 创建表达式
         expr = nums[0]
-        formatted_expr = formatted_nums[0]
+        formatted_expr = formatted_nums[0]  # 初始化格式化表达式
         for i in range(num_operands - 1):
+            # 根据运算符的类型选择如何组合表达式
             if random_ops[i] in ['+', '-']:
-                expr = f"({expr} {random_ops[i]} {nums[i + 1]})"
-                formatted_expr = f"({formatted_expr} {random_ops[i]} {formatted_nums[i + 1]})"
+                expr = f"({expr} {random_ops[i]} {nums[i + 1]})"  # 对加法和减法使用括号
+                formatted_expr = f"({formatted_expr} {random_ops[i]} {formatted_nums[i + 1]})"  # 处理格式化表达式
             else:
-                expr += f" {random_ops[i]} {nums[i + 1]}"
+                expr += f" {random_ops[i]} {nums[i + 1]}"  # 对乘法和除法直接连接
                 formatted_expr += f" {random_ops[i]} {formatted_nums[i + 1]}"
 
         # 去掉最外层的括号
         if expr.startswith('(') and expr.endswith(')'):
-            expr = expr[1:-1]
+            expr = expr[1:-1]  # 去掉普通表达式的括号
         if formatted_expr.startswith('(') and formatted_expr.endswith(')'):
-            formatted_expr = formatted_expr[1:-1]
+            formatted_expr = formatted_expr[1:-1]  # 去掉格式化表达式的括号
 
         try:
-            result = eval(expr)
-            if result < 0:
+            result = eval(expr)  # 计算结果
+            if result < 0:  # 结果不能为负数
                 continue
         except ZeroDivisionError:
-            continue
+            continue  # 捕获除零错误，继续下一轮
         except SyntaxError:
             continue
 
-        exercises.add(expr)
-        exercise_pairs.append((expr, formatted_expr))  # 保存元组
+        exercises.add(expr)  # 将有效表达式添加到集合
+        exercise_pairs.append((expr, formatted_expr))  # 保存题目及其格式化形式
 
     # 分离出题目和带分数形式
     exercises, formatted_exercises = zip(*exercise_pairs) if exercise_pairs else ([], [])
 
-    return list(exercises), list(formatted_exercises)
+    return list(exercises), list(formatted_exercises)  # 返回题目和格式化题目的列表
 
 
 @profile
@@ -146,7 +150,7 @@ def save_grade(correct, wrong):
 
 @profile
 def main():
-    # 固定生成题目的个数和数值范围
+    # 测试 固定生成题目的个数和数值范围
     num_questions = 5  # 生成10道题目
     range_limit = 10  # 数值范围为1到10
 
